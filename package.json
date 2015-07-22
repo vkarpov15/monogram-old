@@ -1,0 +1,30 @@
+{
+  "name": "monogram",
+  "version": "0.0.1",
+  "author": "Valeri Karpov <valeri.karpov@mongodb.com>",
+  "bugs": {
+    "url": "https://github.com/vkarpov15/monogram/issues"
+  },
+  "dependencies": {
+    "dot-component": "0.1.1",
+    "mongodb": "2.0.35"
+  },
+  "description": "WIP ES6/ES7 ODM for MongoDB",
+  "devDependencies": {
+    "co": "4.6.0",
+    "mocha": "2.2.4"
+  },
+  "engines": {
+    "node": ">= 0.12.0"
+  },
+  "homepage": "https://github.com/vkarpov15/monogram#readme",
+  "license": "Apache 2.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vkarpov15/monogram.git"
+  },
+  "scripts": {
+    "test": "mocha --harmony test/*.test.js"
+  }
+}
