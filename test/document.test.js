@@ -1,17 +1,11 @@
 var assert = require('assert');
-var co = require('co');
 var Document = require('../').Document;
 
 describe('Document', function() {
-  it('tracks changes on non-new docs', function(done) {
-    co(function*() {
-      var obj = Document({}, false);
-      obj.a = 1;
-      assert.deepEqual(yield obj.$delta(), { $set: { a: 1 }, $unset: {} });
-      done();
-    }).catch(function(err) {
-      done(err);
-    });
+  it('tracks changes on non-new docs', function() {
+    var obj = Document({}, false);
+    obj.a = 1;
+    assert.deepEqual(obj.$delta(), { $set: { a: 1 }, $unset: {} });
   });
 
   it('tracks changes on nested docs', function() {
@@ -62,28 +56,22 @@ describe('Document', function() {
       { $set: { }, $unset: { top: true, nested: true } });
   });
 
-  it('handles arrays', function(done) {
-    co(function*() {
-      var obj = Document({}, false);
+  it('handles arrays', function() {
+    var obj = Document({}, false);
 
-      obj.arr = [1, 2];
+    obj.arr = [1, 2];
 
-      assert.deepEqual(yield obj.$delta(),
-        { $set: { arr: [1, 2] }, $unset: {} });
+    assert.deepEqual(obj.$delta(),
+      { $set: { arr: [1, 2] }, $unset: {} });
 
-      obj.arr[1] = 3;
+    obj.arr[1] = 3;
 
-      assert.deepEqual(yield obj.$delta(),
-        { $set: { arr: [1, 3] }, $unset: {} });
+    assert.deepEqual(obj.$delta(),
+      { $set: { arr: [1, 3] }, $unset: {} });
 
-      obj.arr.push(5);
+    obj.arr.push(5);
 
-      assert.deepEqual(yield obj.$delta(),
-        { $set: { arr: [1, 3, 5] }, $unset: {} });
-
-      done();
-    }).catch(function(err) {
-      done(err);
-    });
+    assert.deepEqual(obj.$delta(),
+      { $set: { arr: [1, 3, 5] }, $unset: {} });
   });
 });
