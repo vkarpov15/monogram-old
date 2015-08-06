@@ -24,7 +24,7 @@ describe('Document', function() {
       { $set: { nested: { y: 2 } }, $unset: {} });
   });
 
-  it('clears changes', function() {
+  it('clears changes on child fields', function() {
     var obj = Document({ nested: { x: 1 } }, false);
 
     obj.nested.x = 5;
@@ -73,5 +73,16 @@ describe('Document', function() {
 
     assert.deepEqual(obj.$delta(),
       { $set: { arr: [1, 3, 5] }, $unset: {} });
+  });
+
+  it('can ignore changes', function() {
+    var obj = Document({}, false);;
+
+    obj.$ignore(function() {
+      obj.test = 1;
+    });
+
+    assert.deepEqual(obj.$delta(),
+      { $set: { }, $unset: {} });
   });
 });

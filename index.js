@@ -4,12 +4,24 @@ var N = require('nested-observe');
 
 function Document(obj, isNew) {
   var delta = { $set: {}, $unset: {} };
-  var observer = _createObserver(obj, delta);
+  var state = {};
+  var observer = _createObserver(obj, delta, state);
+
+  obj.$apply = function() {
+    N.deliverChangeRecords(observer);
+  }
 
   obj.$delta = function() {
-    N.deliverChangeRecords(observer);
+    obj.$apply();
     return delta;
-  }
+  };
+
+  obj.$ignore = function(fn) {
+    state.ignore = true;
+    fn();
+    obj.$apply();
+    state.ignore = false;
+  };
 
   if (!isNew) {
     N.observe(obj, observer);
@@ -18,8 +30,12 @@ function Document(obj, isNew) {
   return obj;
 }
 
-function _createObserver(obj, delta) {
+function _createObserver(obj, delta, state) {
   return function(changes) {
+    if (state.ignore) {
+      return;
+    }
+
     changes.forEach(function(change) {
       var path = jsonToMongoPath(change.path);
       if (change.type === 'add' || change.type === 'update') {
