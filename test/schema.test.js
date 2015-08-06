@@ -42,4 +42,18 @@ describe('schema', function() {
       'arrNested.$.$': { $type: 'Number' }
     });
   });
+
+  it('handles nested document arrays', function() {
+    var schema = new Schema({
+      docs: [{ _id: 'ObjectId' }]
+    });
+
+    schema.compile();
+
+    assert.deepEqual(schema._paths, {
+      'docs': { $type: 'array' },
+      'docs.$': { $type: 'nested' },
+      'docs.$._id': { $type: 'ObjectId' }
+    });
+  });
 });
