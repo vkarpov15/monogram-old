@@ -14,48 +14,52 @@ describe('Document', function() {
     });
   });
 
-  it('tracks changes on nested docs', function(done) {
-    co(function*() {
-      var obj = Document({}, false);
+  it('tracks changes on nested docs', function() {
+    var obj = Document({}, false);
 
-      obj.nested = { x: 2 };
-      assert.deepEqual(yield obj.$delta(),
-        { $set: { nested: { x: 2 } }, $unset: {} });
+    obj.nested = { x: 2 };
+    assert.deepEqual(obj.$delta(),
+      { $set: { nested: { x: 2 } }, $unset: {} });
 
-      ++obj.nested.x;
-      assert.deepEqual(yield obj.$delta(),
-        { $set: { nested: { x: 3 } }, $unset: {} });
+    ++obj.nested.x;
+    assert.deepEqual(obj.$delta(),
+      { $set: { nested: { x: 3 } }, $unset: {} });
 
-      done();
-    }).catch(function(err) {
-      done(err);
-    });
+    obj.nested = { y: 2 };
+    assert.deepEqual(obj.$delta(),
+      { $set: { nested: { y: 2 } }, $unset: {} });
   });
 
-  it('handles deletes', function(done) {
-    co(function*() {
-      var obj = Document({}, false);
+  it('clears changes', function() {
+    var obj = Document({ nested: { x: 1 } }, false);
 
-      obj.top = 1;
-      obj.nested = { x: 2 };
+    obj.nested.x = 5;
+    assert.deepEqual(obj.$delta(),
+      { $set: { 'nested.x': 5 }, $unset: {} });
 
-      assert.deepEqual(yield obj.$delta(),
-        { $set: { top: 1, nested: { x: 2 } }, $unset: {} });
+    obj.nested = { x: 3 };
+    assert.deepEqual(obj.$delta(),
+      { $set: { nested: { x: 3 } }, $unset: {} });
+  });
 
-      delete obj.nested['x'];
-      delete obj.top;
+  it('handles deletes', function() {
+    var obj = Document({}, false);
 
-      assert.deepEqual(yield obj.$delta(),
-        { $set: { nested: {} }, $unset: { 'nested.x': true, top: true } });
+    obj.top = 1;
+    obj.nested = { x: 2 };
 
-      delete obj['nested'];
-      assert.deepEqual(yield obj.$delta(),
-        { $set: { }, $unset: { top: true, nested: true } });
+    assert.deepEqual(obj.$delta(),
+      { $set: { top: 1, nested: { x: 2 } }, $unset: {} });
 
-      done();
-    }).catch(function(err) {
-      done(err);
-    });
+    delete obj.nested['x'];
+    delete obj.top;
+
+    assert.deepEqual(obj.$delta(),
+      { $set: { nested: {} }, $unset: { 'nested.x': true, top: true } });
+
+    delete obj['nested'];
+    assert.deepEqual(obj.$delta(),
+      { $set: { }, $unset: { top: true, nested: true } });
   });
 
   it('handles arrays', function(done) {

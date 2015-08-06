@@ -13,6 +13,7 @@
   "description": "WIP ES6/ES7 ODM for MongoDB",
   "devDependencies": {
     "co": "4.6.0",
+    "istanbul": "0.3.17",
     "mocha": "2.2.4"
   },
   "engines": {
@@ -26,6 +27,7 @@
     "url": "git+https://github.com/vkarpov15/monogram.git"
   },
   "scripts": {
+    "coverage": "node --harmony ./node_modules/.bin/istanbul cover _mocha -- test/*.test.js",
     "test": "mocha --harmony test/*.test.js"
   }
 }
