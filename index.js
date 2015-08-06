@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var mongodb = require('mongodb');
+var N = require('nested-observe');
 
 function Document(obj, isNew) {
   var delta = { $set: {}, $unset: {} };
@@ -19,42 +20,39 @@ function Document(obj, isNew) {
   return obj;
 }
 
-function _observe(obj, delta, path) {
-  path = path ? path + '.' : '';
-
-  Object.observe(obj, function(changes) {
+function _observe(obj, delta) {
+  N.observe(obj, function(changes) {
     changes.forEach(function(change) {
-      switch (change.type) {
-        case 'add':
-        case 'update':
-          _.set(delta.$set, path + change.name, obj[change.name]);
-          if (typeof obj[change.name] === 'object') {
-            _observe(obj[change.name], delta, path + change.name);
-          }
-          break;
-        case 'delete':
-          const re = new RegExp('^' + path + change.name);
-          for (var key of Object.keys(delta.$unset)) {
-            if (re.test(key)) {
-              delete delta.$unset[key];
-            }
-          }
-          delta.$unset[path + change.name] = true;
-          if (typeof delta.$set[path + change.name] === 'object') {
-            Object.unobserve(obj[change.name]);
-          }
-          if (path.length > 0) {
-            delete _.get(delta.$set, path)[change.name];
-          } else {
-            delete delta.$set[change.name];
-          }
-
-          break;
-        default:
-          break;
+      var path = jsonToMongoPath(change.path);
+      if (change.type === 'add') {
+        _clean(delta, path);
+        delta.$set[path] = _.get(obj, path);
+        delete delta.$unset[path];
+      } else if (change.type === 'delete') {
+        _clean(delta, path);
+        delta.$unset[path] = true;
+        delete delta.$set[path];
       }
     });
   });
+}
+
+function _clean(delta, path) {
+  const re = new RegExp('^' + path + '\\.');
+  _.each(delta.$set, function(value, key) {
+    if (re.test(key)) {
+      delete delta.$set[key];
+    }
+  });
+  _.each(delta.$unset, function(value, key) {
+    if (re.test(key)) {
+      delete delta.$unset[key];
+    }
+  });
+}
+
+function jsonToMongoPath(path) {
+  return path.replace(/\//g, '.').substr(1);
 }
 
 exports.Document = Document;

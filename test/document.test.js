@@ -50,7 +50,7 @@ describe('Document', function() {
 
       delete obj['nested'];
       assert.deepEqual(yield obj.$delta(),
-        { $set: { nested: {} }, $unset: { top: true, nested: true } });
+        { $set: { }, $unset: { top: true, nested: true } });
 
       done();
     }).catch(function(err) {
