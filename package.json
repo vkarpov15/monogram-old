@@ -6,7 +6,7 @@
     "url": "https://github.com/vkarpov15/monogram/issues"
   },
   "dependencies": {
-    "dot-component": "0.1.1",
+    "lodash": "3.x",
     "mongodb": "2.0.35"
   },
   "description": "WIP ES6/ES7 ODM for MongoDB",

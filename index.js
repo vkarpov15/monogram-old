@@ -1,4 +1,4 @@
-var dot = require('dot-component');
+var _ = require('lodash');
 var mongodb = require('mongodb');
 
 function Document(obj, isNew) {
@@ -27,7 +27,7 @@ function _observe(obj, delta, path) {
       switch (change.type) {
         case 'add':
         case 'update':
-          dot.set(delta.$set, path + change.name, obj[change.name]);
+          _.set(delta.$set, path + change.name, obj[change.name]);
           if (typeof obj[change.name] === 'object') {
             _observe(obj[change.name], delta, path + change.name);
           }
@@ -43,7 +43,12 @@ function _observe(obj, delta, path) {
           if (typeof delta.$set[path + change.name] === 'object') {
             Object.unobserve(obj[change.name]);
           }
-          delete dot.parent(delta.$set, path + change.name)[change.name];
+          if (path.length > 0) {
+            delete _.get(delta.$set, path)[change.name];
+          } else {
+            delete delta.$set[change.name];
+          }
+
           break;
         default:
           break;
