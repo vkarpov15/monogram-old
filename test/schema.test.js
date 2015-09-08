@@ -4,10 +4,10 @@ var Schema = require('../lib/schema');
 describe('schema', function() {
   it('compiles paths', function() {
     var schema = new Schema({
-      test: 'Number',
+      test: Number,
       nested: {
         a: {
-          $type: 'Number'
+          $type: Number
         }
       }
     });
@@ -15,45 +15,45 @@ describe('schema', function() {
     schema.compile();
 
     assert.deepEqual(schema._paths, {
-      test: { $type: 'Number' },
-      nested: { $type: 'nested' },
-      'nested.a': { $type: 'Number' }
+      test: { $type: Number },
+      nested: { $type: Object },
+      'nested.a': { $type: Number }
     });
   });
 
   it('handles arrays', function() {
     var schema = new Schema({
-      test: 'Number',
+      test: Number,
       arrMixed: [],
-      arrPlain: ['Number'],
-      arrNested: [['Number']]
+      arrPlain: [Number],
+      arrNested: [[Number]]
     });
 
     schema.compile();
 
     assert.deepEqual(schema._paths, {
-      'test': { $type: 'Number' },
-      'arrMixed': { $type: 'array' },
-      'arrMixed.$': { $type: 'mixed' },
-      'arrPlain': { $type: 'array' },
-      'arrPlain.$': { $type: 'Number' },
-      'arrNested': { $type: 'array' },
-      'arrNested.$': { $type: 'array' },
-      'arrNested.$.$': { $type: 'Number' }
+      'test': { $type: Number },
+      'arrMixed': { $type: Array },
+      'arrMixed.$': { $type: Object },
+      'arrPlain': { $type: Array },
+      'arrPlain.$': { $type: Number },
+      'arrNested': { $type: Array },
+      'arrNested.$': { $type: Array },
+      'arrNested.$.$': { $type: Number }
     });
   });
 
   it('handles nested document arrays', function() {
     var schema = new Schema({
-      docs: [{ _id: 'ObjectId' }]
+      docs: [{ _id: Number }]
     });
 
     schema.compile();
 
     assert.deepEqual(schema._paths, {
-      'docs': { $type: 'array' },
-      'docs.$': { $type: 'nested' },
-      'docs.$._id': { $type: 'ObjectId' }
+      'docs': { $type: Array },
+      'docs.$': { $type: Object },
+      'docs.$._id': { $type: Number }
     });
   });
 });
