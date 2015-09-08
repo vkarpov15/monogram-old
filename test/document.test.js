@@ -76,7 +76,7 @@ describe('Document', function() {
   });
 
   it('can ignore changes', function() {
-    var obj = Document({}, false);;
+    var obj = Document({}, false);
 
     obj.$ignore(function() {
       obj.test = 1;

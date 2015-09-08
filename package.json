@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "lodash": "3.x",
-    "mongodb": "2.0.35",
+    "mongodb": "2.0.40",
     "nested-observe": "1.2.1"
   },
   "description": "WIP ES6/ES7 ODM for MongoDB",
