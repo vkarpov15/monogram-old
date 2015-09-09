@@ -13,3 +13,4 @@ module.exports = function*() {
 
 module.exports.Document = require('./lib/document');
 module.exports.Model = Model;
+module.exports.Schema = require('./lib/schema');

@@ -6,6 +6,7 @@
     "url": "https://github.com/vkarpov15/monogram/issues"
   },
   "dependencies": {
+    "koa-compose": "2.3.0",
     "lodash": "3.x",
     "mongodb": "2.0.40",
     "nested-observe": "1.2.1"
