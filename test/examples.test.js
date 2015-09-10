@@ -76,4 +76,20 @@ describe('connecting and querying', function() {
       done(error);
     });
   });
+
+  it('query builder', function(done) {
+    co(function*() {
+      var db = yield monogram('mongodb://localhost:27017');
+      var schema = new monogram.Schema({});
+      var Test = db.model({ schema: schema, collection: 'test4' });
+
+      var count = yield Test.count({}).exec();
+
+      assert.equal(count, 0);
+
+      done();
+    }).catch(function(error) {
+      done(error);
+    });
+  });
 });

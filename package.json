@@ -8,12 +8,14 @@
   "dependencies": {
     "composition": "2.2.1",
     "lodash": "3.x",
-    "mongodb": "2.0.40",
+    "mongodb": "^2.0.40",
     "nested-observe": "1.2.1"
   },
   "description": "WIP ES6/ES7 ODM for MongoDB",
   "devDependencies": {
     "co": "4.6.0",
+    "gulp": "3.8.11",
+    "gulp-mocha": "2.0.1",
     "istanbul": "0.3.17",
     "mocha": "2.2.4"
   },
