@@ -8,7 +8,7 @@ describe('connecting and querying', function() {
       var db = yield monogram('mongodb://localhost:27017');
       var Test = db.model('test');
 
-      yield Test.remove({});
+      yield Test.deleteMany({});
 
       var t = new Test({ _id: 2 });
       yield t.$save();
@@ -43,7 +43,7 @@ describe('connecting and querying', function() {
       });
       var Test = db.model({ schema: schema, collection: 'test2' });
 
-      yield Test.remove({});
+      yield Test.deleteMany({});
 
       var t = new Test({ _id: 5 });
 
