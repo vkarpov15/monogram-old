@@ -12,7 +12,7 @@ describe('connecting and querying', function() {
 
       var t = new Test({ _id: 2 });
       yield t.$save();
-      var res = yield Test.find({ _id: 2 }).exec();
+      var res = yield Test.find({ _id: 2 });
       assert.equal(res.length, 1);
       assert.equal(res[0]._id, 2);
 
@@ -20,7 +20,7 @@ describe('connecting and querying', function() {
       assert.deepEqual(res[0].$delta().$set, { x: 3 });
       yield res[0].$save();
 
-      var res = yield Test.find({ _id: 2 }).exec();
+      var res = yield Test.find({ _id: 2 });
       assert.equal(res.length, 1);
       assert.equal(res[0]._id, 2);
       assert.equal(res[0].x, 3);
@@ -66,7 +66,7 @@ describe('connecting and querying', function() {
       });
       var Test = db.model({ schema: schema, collection: 'test3' });
 
-      var docs = yield Test.find({}).exec();
+      var docs = yield Test.find({});
 
       assert.deepEqual(docs, [{ _id: 'fakedoc' }]);
 
@@ -82,7 +82,7 @@ describe('connecting and querying', function() {
       var schema = new monogram.Schema({});
       var Test = db.model({ schema: schema, collection: 'test4' });
 
-      var count = yield Test.count({}).exec();
+      var count = yield Test.count({});
 
       assert.equal(count, 0);
 
