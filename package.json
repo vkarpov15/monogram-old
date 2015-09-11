@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "composition": "2.2.1",
+    "debug": "2.2.0",
     "lodash": "3.x",
     "mongodb": "^2.0.40",
     "nested-observe": "1.2.1"
