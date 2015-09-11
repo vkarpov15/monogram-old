@@ -82,7 +82,17 @@ describe('connecting and querying', function() {
       var schema = new monogram.Schema({});
       var Test = db.model({ schema: schema, collection: 'test4' });
 
-      var count = yield Test.count({});
+      yield Test.deleteMany({});
+
+      var t = new Test({ _id: 5 });
+
+      yield t.$save();
+
+      var count = yield Test.find({ _id: 5 }).count({});
+
+      assert.equal(count, 1);
+
+      count = yield Test.find({ _id: 4 }).count({});
 
       assert.equal(count, 0);
 
