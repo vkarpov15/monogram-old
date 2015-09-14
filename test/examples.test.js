@@ -107,4 +107,41 @@ describe('connecting and querying', function() {
       done(error);
     });
   });
+
+  it('custom document methods', function(done) {
+    co(function*() {
+      var db = yield monogram('mongodb://localhost:27017');
+      var schema = new monogram.Schema({});
+
+      schema.method('document', '$validate', function() {
+        throw new Error('validation error!');
+      });
+
+      schema.middleware('$save', function*(next) {
+        yield this.$validate();
+        yield next;
+      });
+
+      var Test = db.model({ schema: schema, collection: 'test5' });
+
+      yield Test.deleteMany({});
+
+      var t = new Test({ _id: 5 });
+
+      try {
+        yield t.$save();
+        assert.ok(false);
+      } catch(err) {
+        assert.equal(err.toString(), 'Error: validation error!');
+      }
+
+      count = yield Test.count({});
+
+      assert.equal(count, 0);
+
+      done();
+    }).catch(function(error) {
+      done(error);
+    });
+  });
 });
