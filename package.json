@@ -21,7 +21,7 @@
     "mocha": "2.2.4"
   },
   "engines": {
-    "node": ">= 0.12.0"
+    "node": ">= 4.0.0"
   },
   "homepage": "https://github.com/vkarpov15/monogram#readme",
   "license": "Apache 2.0",
@@ -31,7 +31,7 @@
     "url": "git+https://github.com/vkarpov15/monogram.git"
   },
   "scripts": {
-    "coverage": "node --harmony ./node_modules/.bin/istanbul cover _mocha -- test/*.test.js",
-    "test": "mocha --harmony test/*.test.js"
+    "coverage": "istanbul cover _mocha -- test/*.test.js",
+    "test": "mocha test/*.test.js"
   }
 }

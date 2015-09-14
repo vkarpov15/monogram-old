@@ -135,9 +135,40 @@ describe('connecting and querying', function() {
         assert.equal(err.toString(), 'Error: validation error!');
       }
 
-      count = yield Test.count({});
+      var count = yield Test.count({});
 
       assert.equal(count, 0);
+
+      done();
+    }).catch(function(error) {
+      done(error);
+    });
+  });
+
+  it('custom query methods', function(done) {
+    co(function*() {
+      var db = yield monogram('mongodb://localhost:27017');
+      var schema = new monogram.Schema({});
+
+      schema.method('query', 'checkVisible', function() {
+        this.find({ isVisible: true });
+        return this;
+      });
+
+      var Test = db.model({ schema: schema, collection: 'test6' });
+
+      yield Test.deleteMany({});
+
+      yield [
+        new Test({ _id: 1, isVisible: true }).$save(),
+        new Test({ _id: 2, isVisible: false }).$save()
+      ];
+
+      var docs = yield Test.find({}).checkVisible();
+
+      assert.equal(docs.length, 1);
+
+      assert.equal(docs[0]._id, 1);
 
       done();
     }).catch(function(error) {
