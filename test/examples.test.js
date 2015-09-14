@@ -60,6 +60,12 @@ describe('connecting and querying', function() {
       var schema = new monogram.Schema({});
       schema.middleware('find', function*(next) {
         var docs = yield next;
+        assert.equal(docs.length, 1);
+        docs.push({ _id: 'fakedoc' });
+        return docs;
+      });
+      schema.middleware('find', function*(next) {
+        var docs = yield next;
         assert.equal(docs.length, 0);
         docs.push({ _id: 'fakedoc' });
         return docs;
@@ -68,7 +74,7 @@ describe('connecting and querying', function() {
 
       var docs = yield Test.find({});
 
-      assert.deepEqual(docs, [{ _id: 'fakedoc' }]);
+      assert.deepEqual(docs, [{ _id: 'fakedoc' }, { _id: 'fakedoc' }]);
 
       done();
     }).catch(function(error) {
