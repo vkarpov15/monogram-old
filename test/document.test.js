@@ -85,4 +85,22 @@ describe('Document', function() {
     assert.deepEqual(obj.$delta(),
       { $set: { }, $unset: {} });
   });
+
+  it('can ignore paths', function() {
+    var obj = Document({}, false);
+
+    obj.$ignorePath('sample', true);
+
+    obj.sample = { x: 2 };
+    assert.deepEqual(obj.$delta(), { $set: {}, $unset: {} });
+
+    obj.sample.x = 5;
+    assert.deepEqual(obj.$delta(), { $set: {}, $unset: {} });
+
+    obj.notsample = 5;
+    assert.deepEqual(obj.$delta(), { $set: { notsample: 5 }, $unset: {} });
+
+    delete obj.sample;
+    assert.deepEqual(obj.$delta(), { $set: { notsample: 5 }, $unset: {} });
+  });
 });
