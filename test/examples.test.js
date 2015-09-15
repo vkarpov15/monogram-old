@@ -286,4 +286,35 @@ describe('connecting and querying', function() {
       });
     });
   });
+
+  describe('plugins', function(done) {
+    it('works', function(done) {
+      co(function*() {
+        monogram.use('validation', (schema) => {
+          schema.method('document', '$validate', function() {
+            throw new Error('failed!');
+          });
+        });
+
+        let db = yield monogram('mongodb://localhost:27017');
+        let schema = new monogram.Schema({});
+        let Test = db.model({ schema: schema, collection: 'test' });
+
+        let t = new Test({});
+        try {
+          t.$validate();
+          assert.ok(false);
+        } catch(error) {
+          assert.equal(error.toString(), 'Error: failed!');
+        }
+        done();
+      }).catch(function(error) {
+        done(error);
+      });
+    });
+
+    afterEach(function() {
+      monogram.use('validation', null);
+    });
+  });
 });
