@@ -143,10 +143,10 @@ describe('connecting and querying', function() {
 
         yield Test.deleteMany({});
 
-        yield [
-          new Test({ _id: 1, isVisible: true }).$save(),
-          new Test({ _id: 2, isVisible: false }).$save()
-        ];
+        yield Test.create([
+          { _id: 1, isVisible: true },
+          { _id: 2, isVisible: false }
+        ]);
 
         let docs = yield Test.find({}).checkVisible();
 
