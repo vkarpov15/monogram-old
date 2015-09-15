@@ -177,4 +177,34 @@ describe('connecting and querying', function() {
       done(error);
     });
   });
+
+  it('custom model methods', function(done) {
+    co(function*() {
+      let db = yield monogram('mongodb://localhost:27017');
+      let schema = new monogram.Schema({});
+
+      schema.method('model', 'findVisible', function() {
+        return this.find({ isVisible: true });
+      });
+
+      let Test = db.model({ schema: schema, collection: 'test7' });
+
+      yield Test.deleteMany({});
+
+      yield [
+        new Test({ _id: 1, isVisible: true }).$save(),
+        new Test({ _id: 2, isVisible: false }).$save()
+      ];
+
+      let docs = yield Test.findVisible();
+
+      assert.equal(docs.length, 1);
+
+      assert.equal(docs[0]._id, 1);
+
+      done();
+    }).catch(function(error) {
+      done(error);
+    });
+  });
 });
