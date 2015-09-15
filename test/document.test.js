@@ -90,6 +90,11 @@ describe('Document', function() {
     var obj = Document({}, false);
 
     obj.$ignorePath('sample', true);
+    assert.ok(obj.$ignorePath('sample'));
+    assert.ok(obj.$ignorePath('sample.0'));
+    assert.ok(obj.$ignorePath('sample.0.y'));
+    assert.ok(obj.$ignorePath('sample.test'));
+    assert.ok(obj.$ignorePath('sample.test.x'));
 
     obj.sample = { x: 2 };
     assert.deepEqual(obj.$delta(), { $set: {}, $unset: {} });
