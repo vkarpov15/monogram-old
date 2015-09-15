@@ -33,29 +33,61 @@ describe('connecting and querying', function() {
     });
   });
 
-  it('query builder', function(done) {
-    co(function*() {
-      let db = yield monogram('mongodb://localhost:27017');
-      let schema = new monogram.Schema({});
-      let Test = db.model({ schema: schema, collection: 'test' });
+  describe('query builder', function() {
+    it('is chainable', function(done) {
+      co(function*() {
+        let db = yield monogram('mongodb://localhost:27017');
+        let schema = new monogram.Schema({});
+        let Test = db.model({ schema: schema, collection: 'test' });
 
-      yield Test.deleteMany({});
+        yield Test.deleteMany({});
 
-      let t = new Test({ _id: 5 });
+        let t = new Test({ _id: 5 });
 
-      yield t.$save();
+        yield t.$save();
 
-      let count = yield Test.find({ _id: 5 }).count({});
+        let count = yield Test.find({ _id: 5 }).count({});
 
-      assert.equal(count, 1);
+        assert.equal(count, 1);
 
-      count = yield Test.find({ _id: 4 }).count({});
+        count = yield Test.find({ _id: 4 }).count({});
 
-      assert.equal(count, 0);
+        assert.equal(count, 0);
 
-      done();
-    }).catch(function(error) {
-      done(error);
+        done();
+      }).catch(function(error) {
+        done(error);
+      });
+    });
+
+    it('sort, skip, limit', function(done) {
+      co(function*() {
+        let db = yield monogram('mongodb://localhost:27017');
+        let schema = new monogram.Schema({});
+        let Test = db.model({ schema: schema, collection: 'test' });
+
+        yield Test.deleteMany({});
+
+        yield [
+          new Test({ count: 1 }).$save(),
+          new Test({ count: 2 }).$save(),
+          new Test({ count: 3 }).$save(),
+          new Test({ count: 4 }).$save(),
+          new Test({ count: 5 }).$save()
+        ];
+
+        let docs = yield Test.find({ count: { $gte: 2 } }).
+          sort({ count: -1 }).limit(2).skip(1);
+
+        assert.equal(docs.length, 2);
+
+        assert.equal(docs[0].count, 4);
+        assert.equal(docs[1].count, 3);
+
+        done();
+      }).catch(function(error) {
+        done(error);
+      });
     });
   });
 
