@@ -8,7 +8,7 @@ describe('connecting and querying', function() {
   it('works', function(done) {
     co(function*() {
       let db = yield monogram('mongodb://localhost:27017');
-      let Test = db.model('test');
+      let Test = db.model({ collection: 'test' });
 
       yield Test.deleteMany({});
 

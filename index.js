@@ -8,7 +8,18 @@ let globalPlugins = {};
 module.exports = function*() {
   var db = yield conn.apply(null, arguments);
 
-  db.model = function(options) {
+  var models = {};
+
+  db.model = function(name, options) {
+    if (typeof name === 'object') {
+      options = name;
+      name = null;
+    }
+
+    if (!options) {
+      return models[name];
+    }
+
     if (options.schema) {
       let keys = Object.keys(globalPlugins);
       let length = keys.length;
@@ -18,7 +29,12 @@ module.exports = function*() {
         plugin.plugin(options.schema, plugin.options);
       }
     }
-    return Model(db, options);
+    var model = Model(db, options);
+    if (name) {
+      models[name] = model;
+    }
+
+    return model;
   };
 
   return db;
