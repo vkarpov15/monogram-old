@@ -56,4 +56,18 @@ describe('schema', function() {
       'docs.$._id': { $type: Number }
     });
   });
+
+  it('treats keys that start with $ as a terminus', function() {
+    var schema = new Schema({
+      test: {
+        $prop: 1
+      }
+    });
+
+    schema.compile();
+
+    assert.deepEqual(schema._paths, {
+      'test': { $prop: 1 }
+    });
+  });
 });
