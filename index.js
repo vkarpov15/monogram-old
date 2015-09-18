@@ -51,3 +51,5 @@ module.exports.use = function(name, plugin, options) {
 module.exports.Document = require('./lib/document');
 module.exports.Model = Model;
 module.exports.Schema = require('./lib/schema');
+
+module.exports.ObjectId = require('mongodb').ObjectId;
