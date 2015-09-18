@@ -143,7 +143,7 @@ describe('connecting and querying', function() {
 
         yield Test.deleteMany({});
 
-        yield Test.create([
+        yield Test.insertMany([
           { _id: 1, isVisible: true },
           { _id: 2, isVisible: false }
         ]);
