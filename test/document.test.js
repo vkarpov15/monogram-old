@@ -25,7 +25,11 @@ describe('Document', function() {
   });
 
   it('clears changes on child fields', function() {
-    var obj = Document({ nested: { x: 1 } }, false);
+    var obj = Document({}, false);
+
+    obj.$ignore(function() {
+      obj.nested = { x: 1 };
+    });
 
     obj.nested.x = 5;
     assert.deepEqual(obj.$delta(),

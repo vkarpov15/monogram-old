@@ -19,7 +19,7 @@ describe('connecting and querying', function() {
       assert.equal(res[0]._id, 2);
 
       res[0].x = 3;
-      assert.deepEqual(res[0].$delta().$set, { x: 3 });
+      assert.deepEqual(res[0].$delta().$set, { _id: 2, x: 3 });
       yield res[0].$save();
 
       res = yield Test.find({ _id: 2 });
