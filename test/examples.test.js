@@ -189,6 +189,36 @@ describe('connecting and querying', function() {
         done(error);
       });
     });
+
+    it('schema queue', function(done) {
+      co(function*() {
+        let db = yield monogram('mongodb://localhost:27017');
+        let schema = new monogram.Schema({});
+
+        schema.queue(function() {
+          this.$ignorePath('sample', true);
+        });
+
+        let Test = db.model({ schema: schema, collection: 'test' });
+
+        let t = new Test({}, false);
+
+        assert.ok(t.$ignorePath('sample'));
+        assert.ok(!t.$ignorePath('other'));
+
+        t.sample = 123;
+
+        assert.equal(Object.keys(t.$delta().$set).length, 0);
+
+        t.other = 'abc';
+
+        assert.deepEqual(t.$delta(), { $set: { other: 'abc' }, $unset: {} });
+
+        done();
+      }).catch(function(error) {
+        done(error);
+      });
+    });
   });
 
   describe('middleware', function() {
