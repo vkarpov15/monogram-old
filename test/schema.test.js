@@ -16,7 +16,7 @@ describe('schema', function() {
 
     assert.deepEqual(schema._paths, {
       test: { $type: Number },
-      nested: { $type: Object },
+      nested: { $type: Object, $schema: { a: { $type: Number } } },
       'nested.a': { $type: Number }
     });
   });
@@ -52,7 +52,7 @@ describe('schema', function() {
 
     assert.deepEqual(schema._paths, {
       'docs': { $type: Array },
-      'docs.$': { $type: Object },
+      'docs.$': { $type: Object, $schema: { _id: Number } },
       'docs.$._id': { $type: Number }
     });
   });
