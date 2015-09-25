@@ -196,15 +196,16 @@ describe('connecting and querying', function() {
         let schema = new monogram.Schema({});
 
         schema.queue(function() {
-          this.$ignorePath('sample', true);
+          this.$transform(function(path) {
+            if (path === 'sample') {
+              return null;
+            }
+          });
         });
 
         let Test = db.model({ schema: schema, collection: 'test' });
 
         let t = new Test({}, false);
-
-        assert.ok(t.$ignorePath('sample'));
-        assert.ok(!t.$ignorePath('other'));
 
         t.sample = 123;
 

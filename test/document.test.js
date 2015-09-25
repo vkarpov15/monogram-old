@@ -90,15 +90,14 @@ describe('Document', function() {
       { $set: { }, $unset: {} });
   });
 
-  it('can ignore paths', function() {
+  it('can ignore paths using $transform', function() {
     var obj = Document({}, false);
 
-    obj.$ignorePath('sample', true);
-    assert.ok(obj.$ignorePath('sample'));
-    assert.ok(obj.$ignorePath('sample.0'));
-    assert.ok(obj.$ignorePath('sample.0.y'));
-    assert.ok(obj.$ignorePath('sample.test'));
-    assert.ok(obj.$ignorePath('sample.test.x'));
+    obj.$transform(function(path) {
+      if (path === 'sample' || path.startsWith('sample.')) {
+        return null;
+      }
+    });
 
     obj.sample = { x: 2 };
     assert.deepEqual(obj.$delta(), { $set: {}, $unset: {} });
@@ -111,19 +110,5 @@ describe('Document', function() {
 
     delete obj.sample;
     assert.deepEqual(obj.$delta(), { $set: { notsample: 5 }, $unset: {} });
-  });
-
-  it('can ignore paths with a function', function() {
-    var obj = Document({}, false);
-
-    obj.$ignorePath(function(path) {
-      return path !== 'test';
-    });
-
-    obj.sample = 2;
-    assert.deepEqual(obj.$delta(), { $set: {}, $unset: {} });
-
-    obj.test = 5;
-    assert.deepEqual(obj.$delta(), { $set: { test: 5 }, $unset: {} });
   });
 });
