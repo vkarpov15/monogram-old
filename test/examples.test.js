@@ -196,10 +196,11 @@ describe('connecting and querying', function() {
         let schema = new monogram.Schema({});
 
         schema.queue(function() {
-          this.$transform(function(path) {
+          this.$transform(function(path, change, value) {
             if (path === 'sample') {
               return null;
             }
+            return value;
           });
         });
 

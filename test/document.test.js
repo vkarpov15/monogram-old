@@ -93,10 +93,11 @@ describe('Document', function() {
   it('can ignore paths using $transform', function() {
     var obj = Document({}, false);
 
-    obj.$transform(function(path) {
+    obj.$transform(function(path,change, value) {
       if (path === 'sample' || path.startsWith('sample.')) {
         return null;
       }
+      return value;
     });
 
     obj.sample = { x: 2 };
