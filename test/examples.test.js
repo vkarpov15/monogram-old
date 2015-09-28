@@ -89,6 +89,40 @@ describe('connecting and querying', function() {
         done(error);
       });
     });
+
+    it('streaming', function(done) {
+      co(function*() {
+        let db = yield monogram('mongodb://localhost:27017');
+        let schema = new monogram.Schema({});
+        let Test = db.model({ schema: schema, collection: 'test' });
+
+        yield Test.deleteMany({});
+
+        yield [
+          new Test({ count: 1 }).$save(),
+          new Test({ count: 2 }).$save(),
+          new Test({ count: 3 }).$save(),
+          new Test({ count: 4 }).$save(),
+          new Test({ count: 5 }).$save()
+        ];
+
+        let cursor = yield Test.find({ count: { $gte: 2 } }).
+          cursor();
+
+        let expected = 2;
+        cursor.on('data', function(doc) {
+          assert.equal(doc.count, expected++);
+          assert.ok(doc.$save);
+        });
+
+        cursor.on('end', function() {
+          assert.equal(expected, 6);
+          done();
+        });
+      }).catch(function(error) {
+        done(error);
+      });
+    });
   });
 
   describe('custom methods', function() {
