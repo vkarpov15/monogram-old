@@ -1,9 +1,11 @@
-var assert = require('assert');
-var Schema = require('../lib/schema');
+'use strict';
+
+let assert = require('assert');
+let Schema = require('../lib/schema');
 
 describe('schema', function() {
   it('compiles paths', function() {
-    var schema = new Schema({
+    let schema = new Schema({
       test: Number,
       nested: {
         a: {
@@ -22,7 +24,7 @@ describe('schema', function() {
   });
 
   it('handles arrays', function() {
-    var schema = new Schema({
+    let schema = new Schema({
       test: Number,
       arrMixed: [],
       arrPlain: [Number],
@@ -44,7 +46,7 @@ describe('schema', function() {
   });
 
   it('handles nested document arrays', function() {
-    var schema = new Schema({
+    let schema = new Schema({
       docs: [{ _id: Number }]
     });
 
@@ -58,7 +60,7 @@ describe('schema', function() {
   });
 
   it('treats keys that start with $ as a terminus', function() {
-    var schema = new Schema({
+    let schema = new Schema({
       test: {
         $prop: 1
       }
@@ -69,5 +71,15 @@ describe('schema', function() {
     assert.deepEqual(schema._paths, {
       'test': { $prop: 1 }
     });
+  });
+
+  it('adding paths with .path()', function() {
+    let schema = new Schema({
+      docs: [{ _id: Number }]
+    });
+
+    assert.ok(!schema.path('_id'));
+    schema.path('_id', { $type: Number });
+    assert.deepEqual(schema.path('_id'), { $type: Number });
   });
 });
