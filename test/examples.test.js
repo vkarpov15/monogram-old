@@ -1,19 +1,20 @@
 'use strict';
 
-var assert = require('assert');
-var co = require('co');
-var monogram = require('../');
+const assert = require('assert');
+const co = require('co');
+const monogram = require('../');
 
 describe('connecting and querying', function() {
   it('works', function(done) {
     co(function*() {
-      let db = yield monogram('mongodb://localhost:27017');
-      let Test = db.model({ collection: 'test' });
+      const db = yield monogram('mongodb://localhost:27017');
+      const Test = db.model({ collection: 'test' });
 
       yield Test.deleteMany({});
 
-      let t = new Test({ _id: 2 });
+      const t = new Test({ _id: 2 });
       yield t.$save();
+
       let res = yield Test.find({ _id: 2 });
       assert.equal(res.length, 1);
       assert.equal(res[0]._id, 2);
@@ -36,9 +37,8 @@ describe('connecting and querying', function() {
   describe('query builder', function() {
     it('is chainable', function(done) {
       co(function*() {
-        let db = yield monogram('mongodb://localhost:27017');
-        let schema = new monogram.Schema({});
-        let Test = db.model({ schema: schema, collection: 'test' });
+        const db = yield monogram('mongodb://localhost:27017');
+        const Test = db.model({ collection: 'test' });
 
         yield Test.deleteMany({});
 
@@ -62,27 +62,26 @@ describe('connecting and querying', function() {
 
     it('sort, skip, limit', function(done) {
       co(function*() {
-        let db = yield monogram('mongodb://localhost:27017');
-        let schema = new monogram.Schema({});
-        let Test = db.model({ schema: schema, collection: 'test' });
+        const db = yield monogram('mongodb://localhost:27017');
+        const Test = db.model({ collection: 'test' });
 
         yield Test.deleteMany({});
 
         yield [
-          new Test({ count: 1 }).$save(),
-          new Test({ count: 2 }).$save(),
-          new Test({ count: 3 }).$save(),
-          new Test({ count: 4 }).$save(),
-          new Test({ count: 5 }).$save()
+          new Test({ _id: 1 }).$save(),
+          new Test({ _id: 2 }).$save(),
+          new Test({ _id: 3 }).$save(),
+          new Test({ _id: 4 }).$save(),
+          new Test({ _id: 5 }).$save()
         ];
 
-        let docs = yield Test.find({ count: { $gte: 2 } }).
-          sort({ count: -1 }).limit(2).skip(1);
+        const docs = yield Test.find({ _id: { $gte: 2 } }).
+          sort({ _id: -1 }).limit(2).skip(1);
 
         assert.equal(docs.length, 2);
 
-        assert.equal(docs[0].count, 4);
-        assert.equal(docs[1].count, 3);
+        assert.equal(docs[0]._id, 4);
+        assert.equal(docs[1]._id, 3);
 
         done();
       }).catch(function(error) {
@@ -99,20 +98,19 @@ describe('connecting and querying', function() {
         yield Test.deleteMany({});
 
         yield [
-          new Test({ count: 1 }).$save(),
-          new Test({ count: 2 }).$save(),
-          new Test({ count: 3 }).$save(),
-          new Test({ count: 4 }).$save(),
-          new Test({ count: 5 }).$save()
+          new Test({ _id: 1 }).$save(),
+          new Test({ _id: 2 }).$save(),
+          new Test({ _id: 3 }).$save(),
+          new Test({ _id: 4 }).$save(),
+          new Test({ _id: 5 }).$save()
         ];
 
-        let cursor = yield Test.find({ count: { $gte: 2 } }).
+        let cursor = yield Test.find({ _id: { $gte: 2 } }).
           cursor();
 
         let expected = 2;
         cursor.on('data', function(doc) {
-          assert.equal(doc.count, expected++);
-          assert.ok(doc.$save);
+          assert.equal(doc._id, expected++);
         });
 
         cursor.on('end', function() {
