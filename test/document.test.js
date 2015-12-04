@@ -4,112 +4,53 @@ var Document = require('../').Document;
 describe('Document', function() {
   it('tracks changes on non-new docs', function() {
     var obj = Document({}, false);
-    obj.a = 1;
+    obj.set('a', 1);
     assert.deepEqual(obj.$delta(), { $set: { a: 1 }, $unset: {} });
   });
 
   it('tracks changes on nested docs', function() {
     var obj = Document({}, false);
 
-    obj.nested = { x: 2 };
+    obj.set('nested', { x: 2 });
     assert.deepEqual(obj.$delta(),
       { $set: { nested: { x: 2 } }, $unset: {} });
 
-    ++obj.nested.x;
+    obj.set('nested.x', 3);
     assert.deepEqual(obj.$delta(),
       { $set: { nested: { x: 3 } }, $unset: {} });
 
-    obj.nested = { y: 2 };
+    obj.set('nested', { y: 2 });
     assert.deepEqual(obj.$delta(),
       { $set: { nested: { y: 2 } }, $unset: {} });
-  });
-
-  it('clears changes on child fields', function() {
-    var obj = Document({}, false);
-
-    obj.$ignore(function() {
-      obj.nested = { x: 1 };
-    });
-
-    obj.nested.x = 5;
-    assert.deepEqual(obj.$delta(),
-      { $set: { 'nested.x': 5 }, $unset: {} });
-
-    obj.nested = { x: 3 };
-    assert.deepEqual(obj.$delta(),
-      { $set: { nested: { x: 3 } }, $unset: {} });
   });
 
   it('handles deletes', function() {
     var obj = Document({}, false);
 
-    obj.top = 1;
-    obj.nested = { x: 2 };
+    obj.set('top', 1);
+    obj.set('nested', { x: 2 });
 
     assert.deepEqual(obj.$delta(),
       { $set: { top: 1, nested: { x: 2 } }, $unset: {} });
 
-    delete obj.nested['x'];
-    delete obj.top;
+    obj.set('nested.x', undefined);
+    obj.set('top', undefined);
 
     assert.deepEqual(obj.$delta(),
       { $set: { nested: {} }, $unset: { 'nested.x': true, top: true } });
 
-    delete obj['nested'];
+    obj.set('nested', undefined);
     assert.deepEqual(obj.$delta(),
       { $set: { }, $unset: { top: true, nested: true } });
   });
 
-  it('handles arrays', function() {
-    var obj = Document({}, false);
+  it('marks array as modified when you push', function() {
+    var obj = Document({ arr: [] }, false);
 
-    obj.arr = [1, 2];
-
-    assert.deepEqual(obj.$delta(),
-      { $set: { arr: [1, 2] }, $unset: {} });
-
-    obj.arr[1] = 3;
-
-    assert.deepEqual(obj.$delta(),
-      { $set: { arr: [1, 3] }, $unset: {} });
-
-    obj.arr.push(5);
-
-    assert.deepEqual(obj.$delta(),
-      { $set: { arr: [1, 3, 5] }, $unset: {} });
-  });
-
-  it('can ignore changes', function() {
-    var obj = Document({}, false);
-
-    obj.$ignore(function() {
-      obj.test = 1;
-    });
-
-    assert.deepEqual(obj.$delta(),
-      { $set: { }, $unset: {} });
-  });
-
-  it('can ignore paths using $transform', function() {
-    var obj = Document({}, false);
-
-    obj.$transform(function(path,change, value) {
-      if (path === 'sample' || path.startsWith('sample.')) {
-        return null;
-      }
-      return value;
-    });
-
-    obj.sample = { x: 2 };
     assert.deepEqual(obj.$delta(), { $set: {}, $unset: {} });
 
-    obj.sample.x = 5;
-    assert.deepEqual(obj.$delta(), { $set: {}, $unset: {} });
+    obj.get('arr').push(2);
 
-    obj.notsample = 5;
-    assert.deepEqual(obj.$delta(), { $set: { notsample: 5 }, $unset: {} });
-
-    delete obj.sample;
-    assert.deepEqual(obj.$delta(), { $set: { notsample: 5 }, $unset: {} });
+    assert.deepEqual(obj.$delta(), { $set: { arr: [2] }, $unset: {} });
   });
 });

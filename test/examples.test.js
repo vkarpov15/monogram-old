@@ -19,14 +19,14 @@ describe('connecting and querying', function() {
       assert.equal(res.length, 1);
       assert.equal(res[0]._id, 2);
 
-      res[0].x = 3;
+      res[0].set('x', 3);
       assert.deepEqual(res[0].$delta().$set, { x: 3 });
       yield res[0].$save();
 
       res = yield Test.find({ _id: 2 });
       assert.equal(res.length, 1);
-      assert.equal(res[0]._id, 2);
-      assert.equal(res[0].x, 3);
+      assert.equal(res[0].get('_id'), 2);
+      assert.equal(res[0].get('x'), 3);
 
       done();
     }).catch(function(error) {
@@ -228,25 +228,16 @@ describe('connecting and querying', function() {
         let schema = new monogram.Schema({});
 
         schema.queue(function() {
-          this.$transform(function(path, change, value) {
-            if (path === 'sample') {
-              return null;
-            }
-            return value;
-          });
+          this.fullName = `${this.get('name.first')} ${this.get('name.last')}`;
         });
 
         let Test = db.model({ schema: schema, collection: 'test' });
 
-        let t = new Test({}, false);
+        let t = new Test({ name: { first: 'Axl', last: 'Rose' } }, false);
 
-        t.sample = 123;
+        assert.deepEqual(t.$delta(), { $set: {}, $unset: {} });
 
-        assert.equal(Object.keys(t.$delta().$set).length, 0);
-
-        t.other = 'abc';
-
-        assert.deepEqual(t.$delta(), { $set: { other: 'abc' }, $unset: {} });
+        assert.equal(t.fullName, 'Axl Rose');
 
         done();
       }).catch(function(error) {
