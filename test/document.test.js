@@ -44,13 +44,23 @@ describe('Document', function() {
       { $set: { }, $unset: { top: true, nested: true } });
   });
 
-  it('marks array as modified when you push', function() {
-    var obj = Document({ arr: [] }, false);
+  it('nested getters/setters', function() {
+    var obj = Document({}, false);
 
-    assert.deepEqual(obj.$delta(), { $set: {}, $unset: {} });
+    obj.set('nested', { x: 2 });
+    obj.get('nested').set('x', 5);
 
-    obj.get('arr').push(2);
+    assert.deepEqual(obj.$delta(),
+      { $set: { nested: { x: 5 } }, $unset: {} });
+  });
 
-    assert.deepEqual(obj.$delta(), { $set: { arr: [2] }, $unset: {} });
+  it('chaining nested setters', function() {
+    var obj = Document({}, false);
+
+    obj.set('nested', { x: 2 });
+    obj.get('nested').set('x', 5).set('y', 6);
+
+    assert.deepEqual(obj.$delta(),
+      { $set: { nested: { x: 5, y: 6 } }, $unset: {} });
   });
 });
