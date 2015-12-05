@@ -4,29 +4,54 @@ const assert = require('assert');
 const co = require('co');
 const monogram = require('../');
 
-describe('connecting and querying', function() {
-  it('works', function(done) {
+describe('basic features', function() {
+  beforeEach(function(done) {
     co(function*() {
       const db = yield monogram('mongodb://localhost:27017');
-      const Test = db.model({ collection: 'test' });
+      const M = db.model({ collection: 'people' });
 
-      yield Test.deleteMany({});
+      yield M.deleteMany({});
 
-      const t = new Test({ _id: 2 });
-      yield t.$save();
+      done();
+    }).catch((error) => done(error));
+  });
 
-      let res = yield Test.find({ _id: 2 });
+  it('can connect to MongoDB and insert a document', function(done) {
+    co(function*() {
+      const db = yield monogram('mongodb://localhost:27017');
+      const Person = db.model({ collection: 'people' });
+
+      const axl = new Person({ name: 'Axl Rose' });
+      yield axl.$save();
+
+      let res = yield Person.find({ name: 'Axl Rose' });
       assert.equal(res.length, 1);
-      assert.equal(res[0]._id, 2);
 
-      res[0].set('x', 3);
-      assert.deepEqual(res[0].$delta().$set, { x: 3 });
-      yield res[0].$save();
+      done();
+    }).catch(function(error) {
+      done(error);
+    });
+  });
 
-      res = yield Test.find({ _id: 2 });
+  it('can modify the document with getters/setters', function(done) {
+    co(function*() {
+      const db = yield monogram('mongodb://localhost:27017');
+      const Person = db.model({ collection: 'people' });
+
+      let axl = new Person({ name: 'Axl Rose' });
+      yield axl.$save();
+
+      axl = yield Person.findOne({ name: 'Axl Rose' });
+
+      axl.set('band', "Guns N' Roses");
+
+      assert.deepEqual(axl.$delta(),
+        { $set: { band: "Guns N' Roses" }, $unset: {} });
+
+      yield axl.$save();
+
+      let res = yield Person.find({ band: "Guns N' Roses" });
       assert.equal(res.length, 1);
-      assert.equal(res[0].get('_id'), 2);
-      assert.equal(res[0].get('x'), 3);
 
       done();
     }).catch(function(error) {
