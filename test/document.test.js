@@ -63,4 +63,10 @@ describe('Document', function() {
     assert.deepEqual(obj.$delta(),
       { $set: { nested: { x: 5, y: 6 } }, $unset: {} });
   });
+
+  it('getters handle arrays', function() {
+    var obj = Document({ people: [{ name: 'Axl' }, { name: 'Slash' }] });
+
+    assert.deepEqual(obj.get('people.name'), ['Axl', 'Slash']);
+  });
 });
