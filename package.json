@@ -10,7 +10,8 @@
     "debug": "2.2.0",
     "lodash": "3.x",
     "mongodb": "^2.0.40",
-    "type-component": "0.0.1"
+    "type-component": "0.0.1",
+    "zen-observable": "0.1.9"
   },
   "description": "WIP ES6/ES7 ODM for MongoDB",
   "devDependencies": {

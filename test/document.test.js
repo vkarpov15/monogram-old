@@ -1,3 +1,5 @@
+'use strict';
+
 var assert = require('assert');
 var Document = require('../').Document;
 
@@ -68,5 +70,23 @@ describe('Document', function() {
     var obj = Document({ people: [{ name: 'Axl' }, { name: 'Slash' }] });
 
     assert.deepEqual(obj.get('people.name'), ['Axl', 'Slash']);
+  });
+
+  it('observable', function() {
+    let obj = Document({}, false);
+
+    let calls = 0;
+
+    obj.$observable().subscribe({
+      next: function(val) {
+        ++calls;
+        assert.equal(val.path, 'test');
+        assert.equal(val.value, 1);
+      }
+    });
+
+    obj.set('test', 1);
+
+    assert.equal(calls, 1);
   });
 });
