@@ -15,6 +15,9 @@
   },
   "description": "WIP ES6/ES7 ODM for MongoDB",
   "devDependencies": {
+    "acquit": "0.4.0",
+    "acquit-ignore": "0.0.3",
+    "acquit-markdown": "0.0.2",
     "co": "4.6.0",
     "gulp": "3.8.11",
     "gulp-mocha": "2.0.1",
@@ -33,6 +36,7 @@
   },
   "scripts": {
     "coverage": "istanbul cover _mocha -- test/*.test.js",
+    "docs": "node docs.js",
     "test": "mocha test/*.test.js"
   }
 }
