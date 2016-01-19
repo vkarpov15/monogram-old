@@ -159,15 +159,15 @@ functions. There are three key advantages to this approach:
         new Test({ _id: 5 }).$save()
       ];
 
-      let cursor = yield Test.find({ _id: { $gte: 2 } }).
-        cursor();
+      let stream = yield Test.find({ _id: { $gte: 2 } }).
+        stream();
 
       let expected = 2;
-      cursor.on('data', function(doc) {
+      stream.on('data', function(doc) {
         assert.equal(doc._id, expected++);
       });
 
-      cursor.on('end', function() {
+      stream.on('end', function() {
         assert.equal(expected, 6);
         done();
       });
@@ -175,6 +175,39 @@ functions. There are three key advantages to this approach:
       done(error);
     });
   
+```
+
+## It supports looping over cursors
+
+```javascript
+o(function*() {
+    let db = yield monogram('mongodb://localhost:27017');
+    let schema = new monogram.Schema({});
+    let Test = db.model({ schema: schema, collection: 'test' });
+
+    yield Test.deleteMany({});
+
+    yield [
+      new Test({ _id: 1 }).$save(),
+      new Test({ _id: 2 }).$save(),
+      new Test({ _id: 3 }).$save(),
+      new Test({ _id: 4 }).$save(),
+      new Test({ _id: 5 }).$save()
+    ];
+
+    let cursor = yield Test.find({ _id: { $gte: 2 } }).
+      cursor();
+
+    let expected = 4;
+    let test = yield cursor.next();
+    while (test != null) {
+      --expected;
+      test = yield cursor.next();
+    }
+
+    assert.strictEqual(expected, 0);
+    done();
+  }).catch(error => done(error)
 ```
 
 # custom methods
