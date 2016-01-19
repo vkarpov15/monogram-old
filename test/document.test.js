@@ -70,6 +70,7 @@ describe('Document', function() {
     var obj = Document({ people: [{ name: 'Axl' }, { name: 'Slash' }] });
 
     assert.deepEqual(obj.get('people.name'), ['Axl', 'Slash']);
+    assert.deepEqual(obj.get('people.0'), { name: 'Axl' });
   });
 
   it('observable', function() {
