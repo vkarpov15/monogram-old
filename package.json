@@ -1,6 +1,6 @@
 {
   "name": "monogram",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Valeri Karpov <valeri.karpov@mongodb.com>",
   "bugs": {
     "url": "https://github.com/vkarpov15/monogram/issues"
