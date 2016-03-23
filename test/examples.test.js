@@ -6,9 +6,11 @@ const mongodb = require('mongodb');
 const monogram = require('../');
 
 describe('Basic Overview', function() {
+  let db;
+
   beforeEach(function(done) {
     co(function*() {
-      const db = yield mongodb.MongoClient.connect('mongodb://localhost:27017');
+      db = yield mongodb.MongoClient.connect('mongodb://localhost:27017');
       const M = new monogram.Model(db.collection('people'));
 
       yield db.collection('people').deleteMany({});
@@ -45,7 +47,7 @@ describe('Basic Overview', function() {
    * on the model. There are two key advantages to this approach:
    *
    * 1. Ever tried to clone a mongoose document? Monogram documents have fewer edge cases and quirks.
-   * 3. You don't need to explicitly define a schema
+   * 2. You don't need to explicitly define a schema
    */
   it('save and find', function(done) {
     co(function*() {
@@ -71,5 +73,34 @@ describe('Basic Overview', function() {
     }).catch(function(error) {
       done(error);
     });
+  });
+
+  /**
+   * If you define a schema, monogram will cast against that schema for you,
+   * much like mongoose does.
+   */
+
+  it('casting', function(done) {
+    co(function*() {
+      const schema = new monogram.Schema({
+        bacon: { $type: Number },
+        eggs: { $type: Number }
+      });
+      const Breakfast = new monogram.Model(db.collection('breakfast'), schema);
+
+      yield Breakfast.save({ bacon: '1', eggs: '2' });
+
+      const res = yield Breakfast.find({ bacon: 1, eggs: 2 });
+      assert.equal(res.length, 1);
+
+      try {
+        yield Breakfast.save({ bacon: 'Not a number' });
+      } catch(error) {
+        assert.deepEqual(error.errors, {
+          bacon: new Error("Error: Could not cast 'Not a number' to Number")
+        });
+        done();
+      }
+    }).catch(done);
   });
 });
