@@ -1,4 +1,4 @@
 'use strict';
 
 exports.Document = require('./lib/Document');
-exports.Model = require('./lib/ServerModel');
+exports.Model = require('./lib/ClientModel');

@@ -1,17 +1,15 @@
 {
   "name": "monogram",
   "version": "0.0.3",
-  "author": "Valeri Karpov <valeri.karpov@mongodb.com>",
+  "author": "Valeri Karpov <val@boosterfuels.com>",
+  "browser": "./client.js",
   "bugs": {
     "url": "https://github.com/vkarpov15/monogram/issues"
   },
   "dependencies": {
-    "composition": "2.2.1",
     "debug": "2.2.0",
-    "lodash": "3.x",
-    "mongodb": "2.1.x",
-    "type-component": "0.0.1",
-    "zen-observable": "0.1.9"
+    "lodash": "4.6.1",
+    "superangent": "1.8.2"
   },
   "description": "WIP ES6/ES7 ODM for MongoDB",
   "devDependencies": {
@@ -21,6 +19,7 @@
     "co": "4.6.0",
     "gulp": "3.8.11",
     "gulp-mocha": "2.0.1",
+    "mongodb": "2.1.10",
     "istanbul": "0.3.17",
     "mocha": "2.2.4"
   },
