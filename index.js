@@ -50,6 +50,6 @@ module.exports.use = function(name, plugin, options) {
 
 module.exports.Document = require('./lib/document');
 module.exports.Model = Model;
-module.exports.Schema = require('monoschema');
+module.exports.Schema = require('archetype-js').Schema;
 
 module.exports.ObjectId = require('mongodb').ObjectId;
